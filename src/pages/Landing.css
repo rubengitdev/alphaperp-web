@@ -126,6 +126,7 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
 }
 
 .lp-stat {
@@ -336,7 +337,12 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(32, 217, 197, 0.5), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(32, 217, 197, 0.5),
+        transparent
+    );
 }
 
 .lp-chain-hint {
@@ -382,7 +388,9 @@
     font-size: 18px;
     cursor: pointer;
     border-radius: 999px;
-    transition: color 0.15s, background-color 0.15s;
+    transition:
+        color 0.15s,
+        background-color 0.15s;
 }
 
 .lp-stepper button:hover:not(:disabled) {
@@ -786,7 +794,11 @@
 /* ================= OWNERSHIP ================= */
 .lp-own {
     background:
-        radial-gradient(ellipse 60% 80% at 85% 50%, rgba(32, 217, 197, 0.12), transparent 70%),
+        radial-gradient(
+            ellipse 60% 80% at 85% 50%,
+            rgba(32, 217, 197, 0.12),
+            transparent 70%
+        ),
         var(--color-bg);
 }
 
