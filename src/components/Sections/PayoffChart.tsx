@@ -31,7 +31,7 @@ export const PayoffChart: FC<PayoffChartProps> = ({ type, strike, premium, quant
         borderRadius: '8px',
         backgroundColor: 'rgba(0,0,0,0.3)',
         color: '#A3A3A3',
-        fontFamily: "'Space Mono', monospace",
+        fontFamily: "'Satoshi', sans-serif",
         fontSize: '0.85rem'
       }}>
         ENTER VALID PARAMETERS TO SEE PAYOFF CHART
@@ -82,7 +82,7 @@ export const PayoffChart: FC<PayoffChartProps> = ({ type, strike, premium, quant
         marginBottom: '1rem',
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
-        fontFamily: "'Space Mono', monospace",
+        fontFamily: "'Satoshi', sans-serif",
         margin: '0 0 1rem 0'
       }}>
         Projected Payoff (PnL)
@@ -94,29 +94,29 @@ export const PayoffChart: FC<PayoffChartProps> = ({ type, strike, premium, quant
             <XAxis 
               dataKey="price" 
               stroke="#A3A3A3" 
-              tick={{fill: '#A3A3A3', fontSize: 12, fontFamily: 'Space Mono'}}
+              tick={{fill: '#A3A3A3', fontSize: 12, fontFamily: 'Satoshi'}}
               tickFormatter={(val) => `$${val}`}
             />
             <YAxis 
               stroke="#A3A3A3" 
-              tick={{fill: '#A3A3A3', fontSize: 12, fontFamily: 'Space Mono'}}
+              tick={{fill: '#A3A3A3', fontSize: 12, fontFamily: 'Satoshi'}}
               tickFormatter={(val) => `$${val}`}
             />
             <Tooltip 
-              contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', fontFamily: 'Space Mono' }}
-              itemStyle={{ color: '#5EEAD4' }}
+              contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', fontFamily: 'Satoshi' }}
+              itemStyle={{ color: '#20D9C5' }}
               formatter={(value: any) => [formatUsd(Number(value) || 0), 'PnL']}
               labelFormatter={(label) => `Asset Price: ${formatUsd(Number(label))}`}
             />
             <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" strokeDasharray="3 3" />
-            <ReferenceLine x={strike} stroke="rgba(94, 234, 212, 0.5)" strokeDasharray="3 3" label={{ position: 'top', value: 'Strike', fill: '#5EEAD4', fontSize: 10, fontFamily: 'Space Mono' }} />
+            <ReferenceLine x={strike} stroke="rgba(32, 217, 197, 0.5)" strokeDasharray="3 3" label={{ position: 'top', value: 'Strike', fill: '#20D9C5', fontSize: 10, fontFamily: 'Satoshi' }} />
             <Line 
               type="monotone" 
               dataKey="pnl" 
-              stroke="#5EEAD4" 
+              stroke="#20D9C5" 
               strokeWidth={2} 
               dot={false}
-              activeDot={{ r: 6, fill: '#5EEAD4' }}
+              activeDot={{ r: 6, fill: '#20D9C5' }}
             />
           </LineChart>
         </ResponsiveContainer>

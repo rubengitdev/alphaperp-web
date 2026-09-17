@@ -165,7 +165,7 @@ export const MarketList: FC<MarketListProps> = ({ onSelectMarket, selectedMarket
       <table className="market-table" style={{ 
         width: '100%', 
         borderCollapse: 'collapse', 
-        fontFamily: "'Space Mono', monospace", 
+        fontFamily: "'Satoshi', sans-serif", 
         fontSize: '0.85rem',
         textAlign: 'left'
       }}>
@@ -203,7 +203,7 @@ export const MarketList: FC<MarketListProps> = ({ onSelectMarket, selectedMarket
                       color: isTradeable ? '#E5E5E5' : '#6B7280',
                       cursor: isTradeable ? 'pointer' : 'not-allowed',
                       transition: 'background-color 0.2s',
-                      backgroundColor: selectedMarketId === mkt.id && isTradeable ? 'rgba(94, 234, 212, 0.1)' : 'transparent',
+                      backgroundColor: selectedMarketId === mkt.id && isTradeable ? 'rgba(32, 217, 197, 0.1)' : 'transparent',
                       opacity: isTradeable ? 1 : 0.5,
                     }}
                     onMouseEnter={(e) => {
@@ -217,7 +217,7 @@ export const MarketList: FC<MarketListProps> = ({ onSelectMarket, selectedMarket
                       }
                     }}
                   >
-                  <td data-label="MKT ID" style={{ padding: '1rem', color: '#5EEAD4' }}>{mkt.id.slice(0,4)}...{mkt.id.slice(-4)}</td>
+                  <td data-label="MKT ID" style={{ padding: '1rem', color: '#20D9C5' }}>{mkt.id.slice(0,4)}...{mkt.id.slice(-4)}</td>
                   <td data-label="ASSET" style={{ padding: '1rem', fontWeight: 'bold' }}>{mkt.symbol}</td>
                   <td data-label="STRIKE" style={{ padding: '1rem' }}>${mkt.strike.toLocaleString()}</td>
                   <td data-label="MARK PRICE" style={{ padding: '1rem', color: '#FCD34D' }}>
@@ -229,7 +229,7 @@ export const MarketList: FC<MarketListProps> = ({ onSelectMarket, selectedMarket
                     })()}
                   </td>
                   <td data-label="EXPIRY" style={{ padding: '1rem' }}>{mkt.expiry}</td>
-                  <td data-label="TYPE" style={{ padding: '1rem', color: isCall ? '#5EEAD4' : '#F87171' }}>{isCall ? 'CALL' : 'PUT'}</td>
+                  <td data-label="TYPE" style={{ padding: '1rem', color: isCall ? '#20D9C5' : '#F87171' }}>{isCall ? 'CALL' : 'PUT'}</td>
                   <td data-label="PREMIUM" style={{ padding: '1rem', textAlign: 'right' }}>${typeof mkt.premiumAsk === 'number' ? mkt.premiumAsk.toFixed(2) : mkt.premiumAsk}</td>
                   <td data-label="LIQ." style={{ padding: '1rem', textAlign: 'right' }}>{mkt.totalLiquidity}</td>
                 </tr>

@@ -9,7 +9,7 @@ const hexToRgb = (hex: string) => {
         g: parseInt(result[2], 16) / 255,
         b: parseInt(result[3], 16) / 255,
       }
-    : { r: 0.368, g: 0.917, b: 0.831 }; // Default #5EEAD4
+    : { r: 0.368, g: 0.917, b: 0.831 }; // Default #20D9C5
 };
 
 const vertexShaderSource = `
@@ -63,7 +63,7 @@ const fragmentShaderSource = `
     float a = 0.5;
     vec2 shift = vec2(100.0);
     mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 4; ++i) {
       v += a * snoise(x);
       x = rot * x * 2.0 + shift;
       a *= 0.5;
@@ -116,8 +116,8 @@ interface SilkBackgroundProps {
 }
 
 export const SilkBackground: React.FC<SilkBackgroundProps> = ({
-  bgColor = '#0A0A0A',
-  color = '#5EEAD4',
+  bgColor = '#0B0B0B',
+  color = '#20D9C5',
   speed = 1.0,
   intensity = 0.25,
   scale = 2.0,
@@ -128,7 +128,14 @@ export const SilkBackground: React.FC<SilkBackgroundProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl');
+    const gl = canvas.getContext('webgl', {
+      antialias: false,
+      alpha: false,
+      depth: false,
+      stencil: false,
+      preserveDrawingBuffer: false,
+      powerPreference: 'low-power',
+    });
     if (!gl) {
       console.warn('WebGL not supported');
       return;
@@ -198,7 +205,10 @@ export const SilkBackground: React.FC<SilkBackgroundProps> = ({
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
+      // Render at 1x regardless of device pixel ratio: this shader paints a
+      // soft, blurred noise field, so supersampling on retina/high-DPI
+      // screens wastes GPU work with no visible sharpness gain.
+      const dpr = 1;
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;

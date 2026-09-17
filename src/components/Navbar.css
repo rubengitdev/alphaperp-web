@@ -1,187 +1,280 @@
 .navbar-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  position: fixed;
-  z-index: 10;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--navbar-height);
+    padding: 0 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10;
+    background-color: var(--color-bg);
+    transition: all 0.15s cubic-bezier(0.44, 0, 0.56, 1);
+    box-sizing: border-box;
 }
 
 .navbar-terminal {
-  top: 0;
-  left: 0;
-  width: 100%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background-color: #0A0A0A;
+    border-bottom: 1px solid rgba(247, 244, 237, 0.06);
 }
 
 .navbar-landing {
-  top: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 3rem);
-  max-width: 1200px;
-  border: 1px solid rgba(10, 38, 34, 0.08);
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 999px;
-  box-shadow: 0 10px 40px rgba(10, 38, 34, 0.05);
+    border-bottom: 1px solid rgba(247, 244, 237, 0.06);
+}
+
+.navbar-logo-link {
+    text-decoration: none;
+}
+
+.wallet-adapter-button:hover {
+    opacity: 0.85;
 }
 
 .navbar-logo {
-  font-family: 'Space Mono', monospace;
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: #5EEAD4;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.navbar-logo img {
+    height: 32px;
+    width: 32px;
+    object-fit: contain;
+}
+
+.navbar-logo-text {
+    font-size: 1.5rem;
+    color: var(--color-text);
 }
 
 .navbar-badge {
-  font-size: 0.6rem;
-  padding: 0.2rem 0.5rem;
-  background-color: rgba(94, 234, 212, 0.1);
-  border-radius: 4px;
-  border: 1px solid rgba(94, 234, 212, 0.2);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.5rem;
+    background-color: rgba(32, 217, 197, 0.1);
+    border-radius: 4px;
+    border: 1px solid rgba(32, 217, 197, 0.25);
+    color: var(--color-primary);
 }
 
 .navbar-links {
-  display: flex;
-  gap: 2rem;
-  font-family: 'Space Mono', monospace;
-  font-size: 0.9rem;
+    display: flex;
+    gap: 2rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+}
+
+.navbar-links a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+    color: var(--color-text);
 }
 
 .navbar-actions {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.navbar-x-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+    margin-right: 12px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.navbar-x-link:hover {
+    opacity: 1;
+}
+
+/* Mainnet / Devnet toggle */
+.network-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.3rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(247, 244, 237, 0.1);
+    border-radius: 999px;
+}
+
+.network-toggle-btn {
+    appearance: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0.6rem 1.2rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+    color: var(--color-text-muted);
+    border-radius: 999px;
+    transition:
+        color 0.2s cubic-bezier(0.44, 0, 0.56, 1),
+        background 0.2s cubic-bezier(0.44, 0, 0.56, 1),
+        box-shadow 0.2s cubic-bezier(0.44, 0, 0.56, 1);
+}
+
+.network-toggle-btn:hover:not(.network-toggle-btn--active) {
+    color: var(--color-text);
+}
+
+.network-toggle-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.network-toggle-btn--active {
+    color: var(--color-bg);
+    /* pinned to a literal teal shade, not var(--color-secondary): the
+       Terminal is out of scope for the marketing redesign and should stay
+       on its original all-teal look regardless of what --color-secondary
+       is reassigned to for marketing pages */
+    background: linear-gradient(135deg, var(--color-primary) 0%, #8FEFE7 100%);
+    box-shadow: 0 0 18px rgba(32, 217, 197, 0.45);
+}
+
+/* navbar-container is position:fixed, which is itself a containing block,
+   so this centers on the full navbar width independent of the logo/actions
+   groups either side of it */
+.network-toggle--centered {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Hamburger Base Styles */
 .hamburger-btn {
-  display: none; /* hidden on desktop */
-  background: transparent;
-  border: none;
-  color: #5EEAD4;
-  cursor: pointer;
-  padding: 0 0.25rem;
+    display: none; /* hidden on desktop */
+    background: transparent;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    padding: 0 0.25rem;
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .navbar-container {
-    padding: 0.5rem 1rem;
-  }
-  
-  .navbar-landing {
-    top: 0.75rem;
-    width: calc(100% - 1.5rem);
-  }
+    .navbar-container {
+        height: var(--navbar-height);
+        padding: 0 1rem;
+    }
 
-  .navbar-logo {
-    font-size: 1rem;
-  }
-  
-  .navbar-badge {
-    display: none; /* Hide the TERMINAL badge on small screens to save space */
-  }
+    .navbar-logo {
+        font-size: 1rem;
+    }
 
-  .logo-text {
-    display: none; /* Hide the word STABLEPERP on mobile, leaving just the logo image */
-  }
+    .navbar-badge {
+        display: none; /* Hide the TERMINAL badge on small screens to save space */
+    }
 
-  .navbar-links {
-    display: none; /* Hide navigation links on mobile */
-  }
+    .logo-text {
+        /* !important needed: LogoText sets display:inline-flex inline, which
+           otherwise beats this rule and lets the full wordmark render, causing
+           navbar-actions to overflow the viewport on small screens */
+        display: none !important;
+    }
 
-  .navbar-actions {
-    gap: 0.25rem;
-  }
+    .navbar-links {
+        display: none; /* Hide navigation links on mobile */
+    }
 
-  .wallet-adapter-button {
-    padding: 0 0.5rem !important;
-    font-size: 0.75rem !important;
-  }
+    .navbar-actions {
+        gap: 0.25rem;
+    }
 
-  .hamburger-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .wallet-adapter-button {
+        height: 40px !important;
+        padding: 0 0.5rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .network-toggle-btn {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.7rem;
+    }
+
+    /* True dead-centering has no room on narrow screens once the wallet
+       button and X icon are accounted for, so fall back to normal flex
+       flow: the toggle still sits between the logo and actions, just not
+       centered on the full navbar width. */
+    .network-toggle--centered {
+        position: static;
+        transform: none;
+    }
+
+    .hamburger-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 /* Mobile Menu Styles */
 .mobile-menu-overlay {
-  position: fixed;
-  top: 4.5rem; /* just below the landing navbar */
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 1.5rem);
-  background-color: rgba(15, 15, 15, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(94, 234, 212, 0.2);
-  border-radius: 16px;
-  z-index: 9;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-  animation: slideDown 0.3s ease forwards;
+    position: fixed;
+    top: 5rem; /* just below the fixed navbar */
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 1.5rem);
+    background-color: var(--color-surface);
+    border: 1px solid rgba(32, 217, 197, 0.2);
+    border-radius: 16px;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    animation: slideDown 0.15s cubic-bezier(0.44, 0, 0.56, 1) forwards;
 }
 
 .mobile-menu-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  font-family: 'Space Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
 }
 
 .mobile-menu-content a {
-  color: #FFF;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-align: center;
-  padding: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    text-align: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(247, 244, 237, 0.06);
 }
 
 .mobile-menu-content a:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-.navbar-landing .navbar-logo {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 500;
-  color: #0A2622 !important;
-}
-.navbar-landing .navbar-links a {
-  font-family: -apple-system, system-ui, sans-serif;
-  color: rgba(10, 38, 34, 0.62) !important;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-.navbar-landing .navbar-links a:hover {
-  color: #0A2622 !important;
-}
-.navbar-landing .hamburger-btn {
-  color: #0A2622;
-}
-.navbar-landing .mobile-menu-overlay {
-  background: rgba(255, 255, 255, 0.95);
-}
-.navbar-landing .mobile-menu-content a {
-  color: #0A2622;
-  font-family: 'Fraunces', Georgia, serif;
+    from {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }

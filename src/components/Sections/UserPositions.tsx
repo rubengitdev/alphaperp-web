@@ -6,6 +6,7 @@ import { useStableperpProgram } from '../../hooks/useStableperpProgram';
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress } from '@solana/spl-token';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { useNetwork } from '../../contexts/NetworkContext';
+import { TxModal } from '../common/TxModal';
 
 // Resolve underlying mint prefix to Binance symbol for live price
 const MINT_PREFIX_TO_SYMBOL: Record<string, string> = {
@@ -44,6 +45,14 @@ export const UserPositions: FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(false);
   const [prices, setPrices] = useState<Record<string, number>>({});
+  const [refreshTick, setRefreshTick] = useState(0);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'info';
+    title: string;
+    message: string;
+    txSignature?: string;
+  }>({ isOpen: false, type: 'success', title: '', message: '' });
   const { network, apiUrl } = useNetwork();
   const wsRef = useRef<WebSocket | null>(null);
   const hermesRef = useRef(new HermesClient("https://hermes.pyth.network"));
@@ -224,7 +233,7 @@ export const UserPositions: FC = () => {
     fetchPositions();
     const interval = setInterval(fetchPositions, 15000);
     return () => clearInterval(interval);
-  }, [publicKey, program, connection, network, apiUrl]);
+  }, [publicKey, program, connection, network, apiUrl, refreshTick]);
 
   // Poll Pyth Prices for positions with pythFeedIds
   useEffect(() => {
@@ -334,15 +343,30 @@ export const UserPositions: FC = () => {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
       }).rpc();
-      
-      alert('Successfully reclaimed collateral / closed position.');
-      window.location.reload(); // refresh
+
+      setModalState({
+        isOpen: true,
+        type: 'success',
+        title: 'Position Closed',
+        message: 'Successfully reclaimed collateral / closed position.',
+      });
+      setRefreshTick((t) => t + 1);
     } catch (e: any) {
       console.error(e);
       if (e.message?.includes('No unsold options')) {
-         alert('No unsold options to close.');
+        setModalState({
+          isOpen: true,
+          type: 'info',
+          title: 'Nothing To Close',
+          message: 'No unsold options to close.',
+        });
       } else {
-         alert('Failed to close position.');
+        setModalState({
+          isOpen: true,
+          type: 'error',
+          title: 'Close Failed',
+          message: 'Failed to close position.',
+        });
       }
     }
   };
@@ -357,15 +381,25 @@ export const UserPositions: FC = () => {
 
   if (positionsWithPnl.length === 0) {
     return (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#525252', fontSize: '0.875rem' }}>
-        No open positions. Click a strike in the chain to build a trade.
-      </div>
+      <>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#525252', fontSize: '0.875rem' }}>
+          No open positions. Click a strike in the chain to build a trade.
+        </div>
+        <TxModal
+          isOpen={modalState.isOpen}
+          type={modalState.type}
+          title={modalState.title}
+          message={modalState.message}
+          txSignature={modalState.txSignature}
+          onClose={() => setModalState({ ...modalState, isOpen: false })}
+        />
+      </>
     );
   }
 
   return (
     <div style={{ flex: 1, overflowY: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem', fontFamily: "'Space Mono', monospace" }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem', fontFamily: "'Satoshi', sans-serif" }}>
         <thead>
           <tr style={{ color: '#A3A3A3', textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
             <th style={{ padding: '0.5rem 1rem', fontWeight: 'normal' }}>Type</th>
@@ -379,7 +413,7 @@ export const UserPositions: FC = () => {
         </thead>
         <tbody>
           {positionsWithPnl.map((pos, idx) => {
-            const pnlColor = pos.pnl === null ? '#A3A3A3' : pos.pnl >= 0 ? '#5EEAD4' : '#F87171';
+            const pnlColor = pos.pnl === null ? '#A3A3A3' : pos.pnl >= 0 ? '#20D9C5' : '#F87171';
             const markPrice = prices[pos.symbol];
             return (
               <tr
@@ -392,7 +426,7 @@ export const UserPositions: FC = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <td style={{ padding: '0.75rem 1rem', color: pos.type === 'LONG' ? '#5EEAD4' : '#F87171', fontWeight: 'bold' }}>
+                <td style={{ padding: '0.75rem 1rem', color: pos.type === 'LONG' ? '#20D9C5' : '#F87171', fontWeight: 'bold' }}>
                   {pos.type}
                 </td>
                 <td style={{ padding: '0.75rem 1rem' }}>{pos.market}</td>
@@ -430,6 +464,14 @@ export const UserPositions: FC = () => {
           })}
         </tbody>
       </table>
+      <TxModal
+        isOpen={modalState.isOpen}
+        type={modalState.type}
+        title={modalState.title}
+        message={modalState.message}
+        txSignature={modalState.txSignature}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+      />
     </div>
   );
 };

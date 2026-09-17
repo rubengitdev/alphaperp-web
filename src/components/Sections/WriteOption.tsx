@@ -45,7 +45,7 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
     try {
       if (!market) throw new Error("No market selected.");
 
-      const marketPubkey = new PublicKey(market.id || PublicKey.unique().toBase58());
+      const marketPubkey = new PublicKey(market.address || PublicKey.unique().toBase58());
       const optionMint = new PublicKey(market.optionMint || PublicKey.unique().toBase58());
       const underlyingMint = new PublicKey(market.underlyingMint || PublicKey.unique().toBase58());
       
@@ -197,11 +197,11 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
   };
 
   return (
-    <form onSubmit={handleWrite} style={{ fontFamily: "'Space Mono', monospace" }}>
+    <form onSubmit={handleWrite} style={{ fontFamily: "'Satoshi', sans-serif" }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <span style={{ color: '#A3A3A3', fontSize: '0.875rem' }}>Strike</span>
         <div style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem', minWidth: '120px', justifyContent: 'space-between' }}>
-          <span style={{ color: '#FFF' }}>{market ? market.strike : '-'}</span>
+          <span style={{ color: '#F7F4ED' }}>{market ? market.strike : '-'}</span>
           <span style={{ color: '#A3A3A3', fontSize: '0.6rem' }}>▼</span>
         </div>
       </div>
@@ -209,7 +209,7 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <span style={{ color: '#A3A3A3', fontSize: '0.875rem' }}>Expiry</span>
         <div style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem', minWidth: '120px', justifyContent: 'space-between' }}>
-          <span style={{ color: '#FFF' }}>{market ? market.expiry : '-'}</span>
+          <span style={{ color: '#F7F4ED' }}>{market ? market.expiry : '-'}</span>
           <span style={{ color: '#A3A3A3', fontSize: '0.6rem' }}>▼</span>
         </div>
       </div>
@@ -218,7 +218,7 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
         <span style={{ color: '#A3A3A3', fontSize: '0.875rem' }}>Contracts</span>
         <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', overflow: 'hidden' }}>
           <button type="button" onClick={() => setQty(String(Math.max(0, Number(qty || 0) - 1)))} style={{ padding: '0.5rem 1rem', backgroundColor: 'transparent', border: 'none', color: '#A3A3A3', cursor: 'pointer', borderRight: '1px solid rgba(255,255,255,0.1)' }}>-</button>
-          <input type="number" step="1" placeholder="0" value={qty} onChange={(e) => setQty(e.target.value)} style={{ width: '60px', textAlign: 'center', backgroundColor: 'transparent', border: 'none', color: '#FFF', outline: 'none', fontFamily: "'Space Mono', monospace" }} />
+          <input type="number" step="1" placeholder="0" value={qty} onChange={(e) => setQty(e.target.value)} style={{ width: '60px', textAlign: 'center', backgroundColor: 'transparent', border: 'none', color: '#F7F4ED', outline: 'none', fontFamily: "'Satoshi', sans-serif" }} />
           <button type="button" onClick={() => setQty(String(Number(qty || 0) + 1))} style={{ padding: '0.5rem 1rem', backgroundColor: 'transparent', border: 'none', color: '#A3A3A3', cursor: 'pointer', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>+</button>
         </div>
       </div>
@@ -226,7 +226,7 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <span style={{ color: '#A3A3A3', fontSize: '0.875rem' }}>Ask Premium</span>
         <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', overflow: 'hidden' }}>
-          <input type="number" step="0.1" placeholder="e.g. 5" value={premium} onChange={(e) => setPremium(e.target.value)} style={{ width: '80px', textAlign: 'center', backgroundColor: 'transparent', border: 'none', color: '#FFF', outline: 'none', fontFamily: "'Space Mono', monospace" }} />
+          <input type="number" step="0.1" placeholder="e.g. 5" value={premium} onChange={(e) => setPremium(e.target.value)} style={{ width: '80px', textAlign: 'center', backgroundColor: 'transparent', border: 'none', color: '#F7F4ED', outline: 'none', fontFamily: "'Satoshi', sans-serif" }} />
           <span style={{ padding: '0.5rem', borderLeft: '1px solid rgba(255,255,255,0.1)', color: '#A3A3A3', fontSize: '0.75rem' }}>USDC</span>
         </div>
       </div>
@@ -234,15 +234,15 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
       <div style={{ padding: '1rem', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
           <span style={{ color: '#A3A3A3', fontSize: '0.75rem' }}>Premium Revenue</span>
-          <span style={{ color: '#5EEAD4', fontSize: '0.75rem' }}>${((Number(qty) || 0) * (Number(premium) || 0)).toFixed(2)}</span>
+          <span style={{ color: '#20D9C5', fontSize: '0.75rem' }}>${((Number(qty) || 0) * (Number(premium) || 0)).toFixed(2)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
           <span style={{ color: '#A3A3A3', fontSize: '0.75rem' }}>Collateral Required</span>
-          <span style={{ color: '#FFF', fontSize: '0.75rem' }}>{((Number(qty) || 0) * (market?.isSynthetic ? 500000 : 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {market?.symbol?.split('/')[0]}</span>
+          <span style={{ color: '#F7F4ED', fontSize: '0.75rem' }}>{((Number(qty) || 0) * (market?.isSynthetic ? 500000 : 1)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {market?.symbol?.split('/')[0]}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
           <span style={{ color: '#A3A3A3', fontSize: '0.75rem' }}>Max profit</span>
-          <span style={{ color: '#5EEAD4', fontSize: '0.75rem' }}>${((Number(qty) || 0) * (Number(premium) || 0)).toFixed(2)}</span>
+          <span style={{ color: '#20D9C5', fontSize: '0.75rem' }}>${((Number(qty) || 0) * (Number(premium) || 0)).toFixed(2)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
           <span style={{ color: '#A3A3A3', fontSize: '0.75rem' }}>Max loss</span>
@@ -258,15 +258,15 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
             <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
                {optionType === 'call' ? (
                  <>
-                   <polygon points="0,30 50,30 50,50 0,50" fill="rgba(94, 234, 212, 0.2)" />
+                   <polygon points="0,30 50,30 50,50 0,50" fill="rgba(32, 217, 197, 0.2)" />
                    <polygon points="50,50 100,100 100,50" fill="rgba(248, 113, 113, 0.2)" />
-                   <polyline points="0,30 50,30 100,80" fill="none" stroke="#5EEAD4" strokeWidth="2" />
+                   <polyline points="0,30 50,30 100,80" fill="none" stroke="#20D9C5" strokeWidth="2" />
                  </>
                ) : (
                  <>
-                   <polygon points="50,30 100,30 100,50 50,50" fill="rgba(94, 234, 212, 0.2)" />
+                   <polygon points="50,30 100,30 100,50 50,50" fill="rgba(32, 217, 197, 0.2)" />
                    <polygon points="0,100 50,50 0,50" fill="rgba(248, 113, 113, 0.2)" />
-                   <polyline points="0,80 50,30 100,30" fill="none" stroke="#5EEAD4" strokeWidth="2" />
+                   <polyline points="0,80 50,30 100,30" fill="none" stroke="#20D9C5" strokeWidth="2" />
                  </>
                )}
                <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(255,255,255,0.2)" strokeDasharray="4" />
@@ -277,11 +277,11 @@ export const WriteOption: FC<WriteOptionProps> = ({ market, optionType = 'call' 
       <button type="submit" disabled={loading || !market || Number(qty) <= 0 || Number(premium) <= 0} style={{
         width: '100%',
         padding: '1rem',
-        backgroundColor: '#5EEAD4',
-        color: '#0A0A0A',
+        backgroundColor: '#20D9C5',
+        color: '#0B0B0B',
         border: 'none',
         borderRadius: '8px',
-        fontFamily: "'Space Mono', monospace",
+        fontFamily: "'Satoshi', sans-serif",
         fontWeight: 'bold',
         fontSize: '0.9rem',
         cursor: (loading || !market || Number(qty) <= 0 || Number(premium) <= 0) ? 'not-allowed' : 'pointer',

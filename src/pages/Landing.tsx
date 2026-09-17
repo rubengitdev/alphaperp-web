@@ -1,552 +1,1004 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { LogoText } from '../components/Navbar';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { SilkBackground } from '../components/SilkBackground';
+import alphaPerpLogo from '../assets/alphaperp-logo-preview.png';
+import './Landing.css';
 
-/* =============================================================================
-   STABLEPERP — landing page in the Hyperliquid (hyperfoundation.org) design
-   language, themed for <LogoText />, Signature: interactive isometric
-   "The <LogoText /> Stack". Self-contained single file, no external assets.
-============================================================================= */
+const fmt = (n: number) =>
+    n.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 
-const MINT = "#97FCE4";
-const INK = "#0A2622";
-const FOREST = "#0A2320";
-const FOREST2 = "#061C19";
-const CREAM = "#E9F7F0";
-const CREAM2 = "#F2FBF7";
-const ON_DARK = "#E8F7F1";
-const MUT_DARK = "rgba(232,247,241,0.60)";
-const MUT_INK = "rgba(10,38,34,0.62)";
-
-const SERIF = "'Fraunces', Georgia, 'Times New Roman', serif";
-const SANS = "-apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-const MONO = "ui-monospace, 'SF Mono', Menlo, monospace";
-
-const Wordmark = ({ color = INK, size = 22 }: any) => (
-  <span style={{ fontFamily: SERIF, fontSize: size, color, letterSpacing: "-0.01em" }}>
-    Stable<i>perp</i>
-  </span>
-);
-
-function Logo({ size = 26, glow = true }: any) {
-  return (
-    <img 
-      src="/logo.png" 
-      alt="Stableperp Logo" 
-      style={{ 
-        height: size, 
-        width: 'auto', 
-        display: "block", 
-        filter: glow ? "drop-shadow(0 0 5px rgba(94,234,212,0.6))" : "none" 
-      }} 
-    />
-  );
-}
-
-/* ---------- high-quality animated topographic background (canvas) ---------- */
-function AnimatedContours({ color = INK, lines = 9, baseAlpha = 0.11 }: any) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    let raf = 0, W = 0, H = 0;
-    const ctx = (canvas as any).getContext("2d");
-    const reduce = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = (canvas as any).clientWidth; H = (canvas as any).clientHeight;
-      (canvas as any).width = Math.max(1, W * dpr); (canvas as any).height = Math.max(1, H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = (t: number) => {
-      ctx.clearRect(0, 0, W, H);
-      const cx = W / 2, cy = H * 0.46;
-      const R = Math.max(W, H);
-      const step = R / (lines * 1.5);
-      for (let i = 0; i < lines; i++) {
-        const rBase = step * 0.4 + i * step;
-        const amp = step * 0.32;
-        const drift = t * 0.00022 * (1 + i * 0.05) + i * 0.55;
-        ctx.beginPath();
-        for (let a = 0; a <= 360; a += 3) {
-          const th = (a * Math.PI) / 180;
-          const r = rBase + amp * Math.sin(3 * th + drift) + amp * 0.35 * Math.cos(2 * th - drift * 0.7);
-          const x = cx + r * Math.cos(th);
-          const y = cy + r * 0.6 * Math.sin(th);
-          a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+/* ---------- logo: one continuous liquid light-sweep, looping ---------- */
+function LiquidLogo() {
+    return (
+        <div
+            style={{
+                position: 'relative',
+                width: 200,
+                height: 200,
+                margin: '0 auto',
+            }}
+        >
+            <img
+                src={alphaPerpLogo}
+                alt="AlphaPerp"
+                className="lc-base"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    transform: 'scale(1.2)',
+                }}
+            />
+            <img
+                src={alphaPerpLogo}
+                alt=""
+                aria-hidden="true"
+                className="lc-sheen"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    transform: 'scale(1.2)',
+                }}
+            />
+            <style>{`
+        .lc-sheen {
+          -webkit-mask-image: linear-gradient(115deg, transparent 40%, rgba(0,0,0,0.9) 50%, transparent 60%);
+          mask-image: linear-gradient(115deg, transparent 40%, rgba(0,0,0,0.9) 50%, transparent 60%);
+          -webkit-mask-size: 260% 260%;
+          mask-size: 260% 260%;
+          filter: brightness(1.6) saturate(1.3);
+          animation: lc-sweep 3.6s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+          will-change: mask-position;
         }
-        ctx.closePath();
-        ctx.strokeStyle = color;
-        ctx.globalAlpha = Math.max(0.035, baseAlpha - i * 0.006);
-        ctx.lineWidth = 1.1;
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(draw);
-    };
-
-    if (reduce) draw(0);
-    else raf = requestAnimationFrame(draw);
-
-    const vis = () => {
-      if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
-      else if (!reduce && !raf) raf = requestAnimationFrame(draw);
-    };
-    document.addEventListener("visibilitychange", vis);
-
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-      document.removeEventListener("visibilitychange", vis);
-    };
-  }, [color, lines, baseAlpha]);
-
-  return <canvas ref={ref} aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }} />;
+        @keyframes lc-sweep {
+          0%   { -webkit-mask-position: 160% 160%; mask-position: 160% 160%; }
+          100% { -webkit-mask-position: -60% -60%; mask-position: -60% -60%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .lc-sheen { display: none; }
+        }
+      `}</style>
+        </div>
+    );
 }
 
-/* ---------- concentric-circle feature icon ---------- */
-const Concentric = ({ variant = 0 }: any) => (
-  <svg width="52" height="52" viewBox="0 0 52 52" aria-hidden="true">
-    {variant === 1 ? (
-      <>
-        <ellipse cx="26" cy="26" rx="24" ry="14" fill="none" stroke={INK} strokeWidth="1.2" opacity="0.5" />
-        <ellipse cx="26" cy="26" rx="14" ry="9" fill="none" stroke={INK} strokeWidth="1.2" opacity="0.7" />
-        <circle cx="26" cy="26" r="4" fill={INK} opacity="0.8" />
-      </>
-    ) : variant === 2 ? (
-      <>
-        <path d="M26 6 C10 6 4 20 4 26 C4 32 10 46 26 46 C42 46 48 32 48 26 C48 20 42 6 26 6Z" fill="none" stroke={INK} strokeWidth="1.2" opacity="0.5" />
-        <circle cx="26" cy="26" r="10" fill="none" stroke={INK} strokeWidth="1.2" opacity="0.7" />
-        <circle cx="26" cy="26" r="3.5" fill={INK} opacity="0.8" />
-      </>
-    ) : (
-      <>
-        <circle cx="26" cy="26" r="22" fill="none" stroke={INK} strokeWidth="1.2" opacity="0.45" />
-        <circle cx="26" cy="26" r="14" fill="none" stroke={INK} strokeWidth="1.2" opacity="0.65" />
-        <circle cx="26" cy="26" r="6" fill="none" stroke={INK} strokeWidth="1.4" opacity="0.85" />
-      </>
-    )}
-  </svg>
-);
+/* =============================== STATS =============================== */
+function CountUp({
+    to,
+    decimals = 0,
+    suffix = '',
+}: {
+    to: number;
+    decimals?: number;
+    suffix?: string;
+}) {
+    const ref = useRef<HTMLSpanElement>(null);
+    const [value, setValue] = useState(0);
 
-/* ================= interactive isometric stack ================= */
-const TILE = 54, TILEH = 27;
-const iso = (gx: number, gy: number, gz: number) => ({ x: (gx - gy) * TILE, y: (gx + gy) * TILEH - gz });
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const reduce = window.matchMedia(
+            '(prefers-reduced-motion: reduce)',
+        ).matches;
+        let frame = 0;
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) return;
+                obs.disconnect();
+                if (reduce) {
+                    setValue(to);
+                    return;
+                }
+                const start = performance.now();
+                const tick = (now: number) => {
+                    const p = Math.min((now - start) / 1100, 1);
+                    setValue(to * (1 - Math.pow(1 - p, 3)));
+                    if (p < 1) frame = requestAnimationFrame(tick);
+                };
+                frame = requestAnimationFrame(tick);
+            },
+            { threshold: 0.4 },
+        );
+        obs.observe(el);
+        return () => {
+            obs.disconnect();
+            cancelAnimationFrame(frame);
+        };
+    }, [to]);
 
-const STACK = [
-  // Left Platform (Core - High gy, Low gx to shift left)
-  { id: "perps", label: "Perps", gx: 0, gy: 3.5, h: 110, flag: true },
-  { id: "options", label: "Options", gx: 1.5, gy: 3.5, h: 140, flag: true },
-  { id: "oracles", label: "Oracles", gx: 0, gy: 5, h: 90 },
-  { id: "settlement", label: "Settlement", gx: 1.5, gy: 5, h: 70 },
-  { id: "factory", label: "Factory", gx: 0.75, gy: 6.5, h: 80 },
-  
-  // Right Platform (Ecosystem - High gx, Low gy to shift right)
-  { id: "vault", label: "Vaults", gx: 3.5, gy: 0, h: 120 },
-  { id: "collateral", label: "Collateral", gx: 5, gy: 0, h: 90 },
-  { id: "copilot", label: "Copilot / MCP", gx: 6.5, gy: 0, h: 130 },
-  { id: "positions", label: "Positions", gx: 4.25, gy: 1.5, h: 100 },
-  { id: "corp", label: "Corp. Actions", gx: 5.75, gy: 1.5, h: 80 },
-  { id: "more", label: "And More", gx: 5, gy: 3, h: 110 },
+    return (
+        <span ref={ref} className="mono-num">
+            {value.toFixed(decimals)}
+            {suffix}
+        </span>
+    );
+}
+
+function StatsBand() {
+    const stats = [
+        {
+            value: <CountUp to={0.4} decimals={1} suffix="s" />,
+            label: 'Block time on Solana',
+        },
+        { value: <CountUp to={20} suffix="+" />, label: 'US stocks to trade' },
+        { value: 'Pyth', label: 'Price oracle' },
+        { value: 'USDC', label: 'Settlement currency' },
+    ];
+    return (
+        <section className="lp-stats" aria-label="AlphaPerp at a glance">
+            <div className="lp-stats-inner">
+                {stats.map((s) => (
+                    <div className="lp-stat" key={s.label}>
+                        <div className="lp-stat-value">{s.value}</div>
+                        <div className="lp-stat-label">{s.label}</div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+}
+
+/* ============================ TRADE BUILDER ============================ */
+type Side = 'call' | 'put';
+
+const MARKETS = [
+    {
+        symbol: 'NVDA',
+        name: 'NVIDIA',
+        spot: 223.96,
+        chain: [
+            [17.13, 225, 17.45],
+            [13.86, 230, 21.16],
+            [11.06, 235, 25.34],
+            [8.7, 240, 29.95],
+        ],
+    },
+    {
+        symbol: 'TSLA',
+        name: 'Tesla',
+        spot: 173.44,
+        chain: [
+            [8.12, 175, 10.45],
+            [6.34, 180, 14.2],
+            [4.9, 185, 19.34],
+            [3.7, 190, 24.95],
+        ],
+    },
+    {
+        symbol: 'AAPL',
+        name: 'Apple',
+        spot: 165.23,
+        chain: [
+            [5.1, 165, 4.85],
+            [3.45, 170, 7.1],
+            [2.1, 175, 10.3],
+            [1.15, 180, 14.95],
+        ],
+    },
+    {
+        symbol: 'COIN',
+        name: 'Coinbase',
+        spot: 254.1,
+        chain: [
+            [10.2, 250, 8.9],
+            [8.15, 255, 12.3],
+            [6.4, 260, 15.45],
+            [4.8, 265, 19.2],
+        ],
+    },
 ];
 
-function Box({ item }: any) {
-  const { gx, gy, h, flag } = item;
-  const top = h, base = 0;
-  const w = 1.0;
-  const A = iso(gx, gy, top), B = iso(gx + w, gy, top), C = iso(gx + w, gy + w, top), D = iso(gx, gy + w, top);
-  const B2 = iso(gx + w, gy, base), C2 = iso(gx + w, gy + w, base), D2 = iso(gx, gy + w, base);
-  const topC = flag ? MINT : "#245045";
-  const rightC = flag ? "#5FD9BE" : "#1B3E36";
-  const leftC = flag ? "#37B79A" : "#132E28";
-  const poly = (pts: any, fill: any) => <polygon points={pts.map((p: any) => `${p.x},${p.y}`).join(" ")} fill={fill} stroke="rgba(151,252,228,0.22)" strokeWidth={0.8} />;
-  const rf = [B, C, C2, B2], lf = [D, C, C2, D2];
-  return (
-    <g>
-      {poly(lf, leftC)}{poly(rf, rightC)}{poly([A, B, C, D], topC)}
-    </g>
-  );
+function PayoffChart({
+    side,
+    strike,
+    premium,
+    qty,
+    spot,
+}: {
+    side: Side;
+    strike: number;
+    premium: number;
+    qty: number;
+    spot: number;
+}) {
+    const W = 360;
+    const H = 150;
+    const PAD = 14;
+    const lo = strike * 0.8;
+    const hi = strike * 1.2;
+    const pnl = (s: number) =>
+        ((side === 'call' ? Math.max(s - strike, 0) : Math.max(strike - s, 0)) -
+            premium) *
+        qty;
+
+    const samples = Array.from({ length: 61 }, (_, i) => {
+        const s = lo + ((hi - lo) * i) / 60;
+        return [s, pnl(s)] as const;
+    });
+    const values = samples.map((p) => p[1]);
+    const yMin = Math.min(...values);
+    const yMax = Math.max(...values);
+    const x = (s: number) => PAD + ((s - lo) / (hi - lo)) * (W - 2 * PAD);
+    const y = (v: number) => PAD + ((yMax - v) / (yMax - yMin)) * (H - 2 * PAD);
+
+    const line = samples
+        .map(
+            ([s, v], i) =>
+                `${i ? 'L' : 'M'}${x(s).toFixed(1)},${y(v).toFixed(1)}`,
+        )
+        .join(' ');
+    const zeroY = y(0);
+    const area = `${line} L${x(hi).toFixed(1)},${zeroY.toFixed(1)} L${x(lo).toFixed(1)},${zeroY.toFixed(1)} Z`;
+    const breakeven = side === 'call' ? strike + premium : strike - premium;
+
+    return (
+        <svg
+            className="lp-payoff"
+            viewBox={`0 0 ${W} ${H}`}
+            role="img"
+            aria-label={`Profit and loss at expiry. Breakeven at $${fmt(breakeven)}.`}
+        >
+            <defs>
+                <clipPath id="lp-payoff-profit">
+                    <rect x="0" y="0" width={W} height={zeroY} />
+                </clipPath>
+                <clipPath id="lp-payoff-loss">
+                    <rect x="0" y={zeroY} width={W} height={H - zeroY} />
+                </clipPath>
+                <linearGradient id="lp-payoff-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                        offset="0%"
+                        style={{
+                            stopColor: 'var(--color-primary)',
+                            stopOpacity: 0.4,
+                        }}
+                    />
+                    <stop
+                        offset="100%"
+                        style={{
+                            stopColor: 'var(--color-primary)',
+                            stopOpacity: 0,
+                        }}
+                    />
+                </linearGradient>
+            </defs>
+            <path
+                d={area}
+                fill="url(#lp-payoff-fill)"
+                clipPath="url(#lp-payoff-profit)"
+            />
+            <line
+                className="lp-payoff-zero"
+                x1={PAD}
+                x2={W - PAD}
+                y1={zeroY}
+                y2={zeroY}
+            />
+            <line
+                className="lp-payoff-spot"
+                x1={x(spot)}
+                x2={x(spot)}
+                y1={PAD}
+                y2={H - PAD}
+            />
+            <text className="lp-payoff-tag" x={x(spot) + 5} y={PAD + 8}>
+                Spot
+            </text>
+            <path
+                d={line}
+                className="lp-payoff-line lp-payoff-line--loss"
+                clipPath="url(#lp-payoff-loss)"
+            />
+            <path
+                d={line}
+                className="lp-payoff-line"
+                clipPath="url(#lp-payoff-profit)"
+            />
+            <circle
+                className="lp-payoff-be"
+                cx={x(breakeven)}
+                cy={zeroY}
+                r="4"
+            />
+        </svg>
+    );
 }
 
-function Platform({ x0, y0, x1, y1, z, color, label, align }: any) {
-  const A = iso(x0, y0, z), B = iso(x1, y0, z), C = iso(x1, y1, z), D = iso(x0, y1, z);
-  const thick = label === 'SOLANA' ? 40 : 20;
-  const B2 = iso(x1, y0, z - thick), C2 = iso(x1, y1, z - thick), D2 = iso(x0, y1, z - thick);
-  const top = [A, B, C, D], right = [B, C, C2, B2], left = [D, C, C2, D2];
-  
-  let tx = 0, ty = 0, rot = 0;
-  if (align === 'left') {
-    tx = (D.x + C.x)/2 - 35; ty = (D.y + C.y)/2 + 25; rot = 26.5;
-  } else if (align === 'right') {
-    tx = (B.x + C.x)/2 + 35; ty = (B.y + C.y)/2 + 25; rot = -26.5;
-  } else {
-    tx = (D.x + C.x)/2; ty = (D.y + C.y)/2 + 45; rot = 26.5;
-  }
+function TradeBuilder() {
+    const [assetIdx, setAssetIdx] = useState(0);
+    const [side, setSide] = useState<Side>('call');
+    const [row, setRow] = useState(0);
+    const [qty, setQty] = useState(1);
 
-  return (
-    <g>
-      <polygon points={right.map(p => `${p.x},${p.y}`).join(" ")} fill="#0A201C" stroke="rgba(151,252,228,0.15)" />
-      <polygon points={left.map(p => `${p.x},${p.y}`).join(" ")} fill="#081A16" stroke="rgba(151,252,228,0.15)" />
-      <polygon points={top.map(p => `${p.x},${p.y}`).join(" ")} fill={color} stroke="rgba(151,252,228,0.2)" />
-      {label && <text x={tx} y={ty} transform={`rotate(${rot} ${tx} ${ty})`} textAnchor="middle" fill="rgba(232,247,241,0.50)" fontSize="13" fontFamily={MONO} letterSpacing="0.2em" fontWeight="600">{label}</text>}
-    </g>
-  );
-}
+    const market = MARKETS[assetIdx];
+    const [callPrem, strike, putPrem] = market.chain[row];
+    const premium = side === 'call' ? callPrem : putPrem;
+    const breakeven = side === 'call' ? strike + premium : strike - premium;
+    const maxProfit =
+        side === 'call' ? 'Unlimited' : `$${fmt((strike - premium) * qty)}`;
+    const sideLabel = side === 'call' ? 'call' : 'put';
 
-function StableperpStack() {
-  return (
-    <div style={{ position: "relative", width: "100%", maxWidth: 1100, margin: "0 auto", padding: "20px 0" }}>
-      <svg viewBox="0 0 1100 760" width="100%" style={{ display: "block", overflow: "visible" }}>
-        {/* Connecting Lines (drawn behind) */}
-        <g stroke="#2C5F53" strokeWidth="1.5" fill="none">
-          {/* Top Left -> Options/Perps */}
-          <polyline points="290,110 360,110 420,170" />
-          {/* Bottom Left -> Core Platform Base */}
-          <polyline points="290,320 330,320 380,370" />
-          {/* Right -> Ecosystem Blocks */}
-          <polyline points="850,150 780,150 710,220" />
-        </g>
-        
-        {/* Base Layer & Blocks */}
-        <g transform="translate(550, 200)">
-          <Platform x0={-1} y0={-1} x1={8.5} y1={8.5} z={-40} color="#081A16" label="SOLANA" align="center" />
-          
-          <Platform x0={-0.5} y0={3} x1={3} y1={8} z={0} color="#0C2A25" label="STABLEPERP CORE" align="left" />
-          <Platform x0={3} y0={-0.5} x1={8} y1={4.5} z={0} color="#0C2A25" label="ECOSYSTEM" align="right" />
+    // index of the first strike above spot, where the spot marker row goes
+    const spotRow = market.chain.findIndex((r) => r[1] > market.spot);
 
-          {[...STACK].sort((a, b) => a.gx + a.gy - (b.gx + b.gy)).map((it) => (
-            <Box key={it.id} item={it} />
-          ))}
-        </g>
-        
-        {/* HTML Text overlays via foreignObject */}
-        <foreignObject x="40" y="30" width="240" height="150">
-          <div style={{ color: "rgba(232,247,241,0.9)", fontFamily: SANS, fontSize: 14, lineHeight: 1.5 }}>
-            Options and perps are the flagship applications built natively on <LogoText /> Core. But they are just the tip of the iceberg.
-          </div>
-        </foreignObject>
+    const pick = (nextSide: Side, nextRow: number) => {
+        setSide(nextSide);
+        setRow(nextRow);
+    };
 
-
-        <foreignObject x="860" y="90" width="240" height="200">
-          <div style={{ color: "rgba(232,247,241,0.9)", fontFamily: SANS, fontSize: 14, lineHeight: 1.5 }}>
-            High performance applications are built natively. The core exists as one unified state on Solana, unlocking applications that simultaneously require performance, liquidity, and programmability.
-          </div>
-        </foreignObject>
-
-      </svg>
-    </div>
-  );
-}
-
-/* ---------- animated fade-in row ---------- */
-function FadeInRow({ children, delay }: any) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) setVisible(true);
-    }, { threshold: 0.1 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-  return (
-    <div ref={ref} style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : 'translateY(40px)',
-      transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`
-    }}>
-      {children}
-    </div>
-  );
-}
-
-/* ---------- phone mockup (mini terminal) ---------- */
-function Phone({ symbol = "NVDA", price = "223.96", color = MINT, rows = [["17.13", "225", "17.45"], ["13.86", "230", "21.16"], ["11.06", "235", "25.34"], ["8.70", "240", "29.95"]] }: any) {
-  return (
-    <div style={{ width: 280, margin: "0 auto", borderRadius: 40, border: "10px solid #0A2320", background: "#0A0A0A", padding: "14px 12px 18px", boxShadow: "0 30px 60px rgba(10,35,32,0.35)", textAlign: "left" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <span style={{ fontFamily: MONO, fontSize: 11, color: color, letterSpacing: "0.15em" }}>STABLEPERP</span>
-        <span style={{ fontFamily: MONO, fontSize: 9, color: color, border: `1px solid ${color}55`, borderRadius: 4, padding: "2px 5px" }}>MAINNET</span>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-        <span style={{ fontFamily: MONO, fontSize: 18, color: "#fff", fontWeight: 700 }}>{symbol}</span>
-        <span style={{ fontFamily: MONO, fontSize: 15, color: color }}>${price}</span>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", fontFamily: MONO, fontSize: 9, color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <span style={{ color: color }}>CALLS</span><span style={{ textAlign: "center" }}>STRIKE</span><span style={{ textAlign: "right" }}>PUTS</span>
-      </div>
-      {rows.map((r: any, i: number) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", fontFamily: MONO, fontSize: 12, padding: "8px 0", background: i === 0 ? "rgba(255,255,255,0.07)" : "transparent" }}>
-          <span style={{ color: color }}>{r[0]}</span>
-          <span style={{ textAlign: "center", color: i === 0 ? color : "#fff", fontWeight: 700 }}>{r[1]}</span>
-          <span style={{ textAlign: "right", color: "rgba(255,255,255,0.8)" }}>{r[2]}</span>
-        </div>
-      ))}
-      <div style={{ marginTop: 12, textAlign: "center", background: color, color: INK, borderRadius: 999, padding: "10px 0", fontFamily: MONO, fontSize: 12, fontWeight: 700 }}>
-        Buy 1 {symbol} {rows[0][1]} Call
-      </div>
-    </div>
-  );
-}
-
-const Pill = ({ children, filled, to = "#" }: any) => (
-  <Link to={to} style={{
-    fontFamily: SANS, fontSize: 16, textDecoration: "none", padding: "15px 34px", borderRadius: 999,
-    background: filled ? MINT : "transparent", color: INK,
-    border: `1.5px solid ${filled ? MINT : "rgba(10,38,34,0.25)"}`, display: "inline-block", fontWeight: 500,
-  }}>{children}</Link>
-);
-
-function LiquidLogo() {
-  return (
-    <div style={{
-      position: 'relative', width: 90, height: 200,
-      margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center'
-    }}>
-      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="liquid-goo" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
-            <feColorMatrix in="blur" mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"
-              result="goo" />
-            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-          </filter>
-        </defs>
-      </svg>
-
-      <div style={{
-        filter: 'url(#liquid-goo)',
-        width: '100%', height: '100%',
-        position: 'absolute',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {/* Main blob A — top ↔ bottom */}
-        <div className="ll-a" style={{
-          position: 'absolute', width: 56, height: 56, borderRadius: '50%',
-          background: 'linear-gradient(145deg, #7EEEFF 0%, #00BFDE 100%)',
-        }} />
-        {/* Bridge blob — stays at center, permanently connects A & B */}
-        <div style={{
-          position: 'absolute', width: 18, height: 18, borderRadius: '50%',
-          background: '#00CCEC',
-          animation: 'll-bridge 9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite',
-        }} />
-        {/* Main blob B — bottom ↔ top */}
-        <div className="ll-b" style={{
-          position: 'absolute', width: 56, height: 56, borderRadius: '50%',
-          background: 'linear-gradient(145deg, #00D4F0 0%, #00A8C8 100%)',
-        }} />
-      </div>
-
-      <style>{`
-        /* 
-          Smoothest possible CSS animation: only 2 keyframes + alternate direction.
-          Browser interpolates a perfect sine curve between start and end.
-          ll-a goes top→bottom, ll-b is the mirror via alternate-reverse.
-          No intermediate stops = zero jitter/jerk.
-        */
-        .ll-a { animation: ll-move 8s ease-in-out infinite alternate; }
-        .ll-b { animation: ll-move 8s ease-in-out infinite alternate-reverse; }
-
-        @keyframes ll-move {
-          from { transform: translateY(-50px); }
-          to   { transform: translateY(50px);  }
-        }
-
-        /* Bridge just breathes gently */
-        @keyframes ll-bridge {
-          0%, 100% { transform: scale(1.0); }
-          50%       { transform: scale(1.2); }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-export default function StableperpLanding() {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.hash) {
-      setTimeout(() => {
-        const id = location.hash.replace('#', '');
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [location]);
-
-  return (
-    <div style={{ background: CREAM, color: INK, fontFamily: SANS }}>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet" />
-      <style>{`
-        @keyframes sp-enter {
-          0%   { opacity: 0; transform: scale(0.4); }
-          60%  { opacity: 1; }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        .sp-enter   { display:inline-block; transform-origin:center; animation: sp-enter 1s cubic-bezier(.2,.8,.3,1.2) both; }
-        @media (prefers-reduced-motion: reduce) { .sp-enter, .sp-elastic { animation: none; } }
-      `}</style>
-
-      {/* HERO */}
-      <section style={{ position: "relative", overflow: "hidden", background: CREAM, padding: "120px 20px 130px" }}>
-        <AnimatedContours />
-        <div style={{ position: "relative", maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-          <div style={{ marginBottom: 40, display: "flex", justifyContent: "center" }}>
-            <span className="sp-enter">
-              <LiquidLogo />
-            </span>
-          </div>
-          <p style={{ fontFamily: SANS, fontSize: 19, lineHeight: 1.5, color: INK, margin: "0 0 8px" }}>
-            No brokers. No settlement delays.<br />No market hours to wait for.
-          </p>
-          <h1 style={{ fontFamily: SERIF, fontSize: "clamp(58px, 11vw, 128px)", fontWeight: 400, letterSpacing: "-0.02em", margin: "10px 0 0", lineHeight: 1 }}>
-            Onchain First.
-          </h1>
-          <p style={{ fontFamily: SANS, fontSize: 18, color: MUT_INK, maxWidth: 540, margin: "26px auto 0", lineHeight: 1.6 }}>
-            Options on real US stocks, priced by Pyth and settled in USDC. Built on Solana.
-          </p>
-          {import.meta.env.VITE_CA && (
-            <div style={{ marginTop: 20 }}>
-              <a 
-                href={`https://pump.fun/${import.meta.env.VITE_CA}`} 
-                target="_blank" 
-                rel="noreferrer"
-                style={{ 
-                  display: "inline-block", fontFamily: MONO, fontSize: 13, color: INK, 
-                  background: "rgba(10,38,34,0.06)", border: "1px solid rgba(10,38,34,0.15)", 
-                  padding: "8px 16px", borderRadius: 999, textDecoration: "none", letterSpacing: "0.05em",
-                  transition: "all 0.2s ease"
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.background = "rgba(10,38,34,0.1)")}
-                onMouseOut={(e) => (e.currentTarget.style.background = "rgba(10,38,34,0.06)")}
-              >
-                CA: {import.meta.env.VITE_CA}
-              </a>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* OWNERSHIP */}
-      <section id="ownership" style={{ background: CREAM2, padding: "110px 20px", textAlign: "center" }}>
-        <h2 style={{ fontFamily: SERIF, fontSize: "clamp(30px, 5vw, 52px)", fontWeight: 400, lineHeight: 1.28, maxWidth: 900, margin: "0 auto", color: MUT_INK, letterSpacing: "-0.01em" }}>
-          Anyone can own and govern <LogoText /> through{" "}
-          <span style={{ color: INK }}>$SPERP</span>, the protocol&rsquo;s native token.
-        </h2>
-        <p style={{ fontFamily: SANS, fontSize: 17, color: INK, marginTop: 30 }}>Own a piece of <LogoText /> today.</p>
-        <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 26, flexWrap: "wrap" }}>
-          <Pill filled to="/terminal">Start Trading</Pill>
-          <Pill to="/docs">Start Building</Pill>
-        </div>
-      </section>
-
-      {/* FLAGSHIP */}
-      <section id="flagship" style={{ background: CREAM, padding: "110px 20px", overflowX: "hidden" }}>
-        <div style={{ maxWidth: 1250, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ fontFamily: SANS, fontSize: 17, color: MUT_INK, margin: 0 }}>The Flagship Application:</p>
-          <h2 style={{ fontFamily: SERIF, fontSize: "clamp(32px, 6vw, 62px)", fontWeight: 400, letterSpacing: "-0.02em", margin: "14px 0 54px" }}>
-            The Premier Onchain <span style={{ fontStyle: "italic" }}>Options</span> Venue
-          </h2>
-          <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "nowrap", alignItems: "flex-start" }}>
-            <FadeInRow delay={0}><Phone symbol="NVDA" price="223.96" color={MINT} rows={[["17.13", "225", "17.45"], ["13.86", "230", "21.16"], ["11.06", "235", "25.34"], ["8.70", "240", "29.95"]]} /></FadeInRow>
-            <FadeInRow delay={0.2}><Phone symbol="TSLA" price="173.44" color={MINT} rows={[["8.12", "175", "10.45"], ["6.34", "180", "14.20"], ["4.90", "185", "19.34"], ["3.70", "190", "24.95"]]} /></FadeInRow>
-            <FadeInRow delay={0.4}><Phone symbol="AAPL" price="165.23" color={MINT} rows={[["5.10", "165", "4.85"], ["3.45", "170", "7.10"], ["2.10", "175", "10.30"], ["1.15", "180", "14.95"]]} /></FadeInRow>
-            <FadeInRow delay={0.6}><Phone symbol="COIN" price="254.10" color={MINT} rows={[["10.20", "250", "8.90"], ["8.15", "255", "12.30"], ["6.40", "260", "15.45"], ["4.80", "265", "19.20"]]} /></FadeInRow>
-          </div>
-        </div>
-
-        <div style={{ maxWidth: 780, margin: "70px auto 0" }}>
-          {[
-            [0, "Low fees", "Zero gas and cheap fills on every trade, priced onchain."],
-            [1, "Transparent", "Fully onchain. Pricing, collateral and settlement are all verifiable on Solana."],
-            [2, "Real US equities", "Calls and puts on NVDA, TSLA, AAPL and more, priced live by Pyth."],
-          ].map(([v, t, d], i) => (
-            <div key={t} style={{ display: "flex", gap: 26, alignItems: "flex-start", padding: "30px 0", borderTop: i === 0 ? "none" : "1px solid rgba(10,38,34,0.12)" }}>
-              <div style={{ flexShrink: 0 }}><Concentric variant={v} /></div>
-              <div>
-                <h3 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 400, margin: "2px 0 8px" }}>{t}</h3>
-                <p style={{ fontFamily: SANS, fontSize: 16.5, lineHeight: 1.55, color: MUT_INK, margin: 0 }}>{d}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* STACK (dark) */}
-      <section id="stack" style={{ background: FOREST, color: ON_DARK, padding: "100px 20px 110px" }}>
-        <h2 style={{ fontFamily: SERIF, fontSize: "clamp(34px, 6vw, 62px)", fontWeight: 400, textAlign: "center", letterSpacing: "-0.01em", margin: "0 0 20px" }}>
-          The <LogoText /> Stack
-        </h2>
-        <p style={{ fontFamily: SANS, fontSize: 17, color: MUT_DARK, textAlign: "center", maxWidth: 620, margin: "0 auto 40px", lineHeight: 1.6 }}>
-          Options and perps are the flagship markets. But they are just the tip of the iceberg.
-        </p>
-
-        <StableperpStack />
-
-        {/* stats */}
-        <div style={{ maxWidth: 860, margin: "70px auto 0", border: "1px solid rgba(151,252,228,0.18)", borderRadius: 22, padding: "34px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 30 }}>
-          {[["Block time", "0.4s"], ["Underlyings", "20+ US stocks"], ["Oracle", "Pyth"], ["Settlement", "USDC"]].map(([l, v]) => (
-            <div key={l} style={{ textAlign: "center" }}>
-              <div style={{ fontFamily: SANS, fontSize: 13, color: MUT_DARK, letterSpacing: "0.08em", marginBottom: 10 }}>{l}</div>
-              <div style={{ fontFamily: SERIF, fontSize: 30, color: ON_DARK }}>{v}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={{ background: FOREST2, color: MUT_DARK, padding: "44px 22px", display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-          <Logo size={24} glow />
-          <Wordmark color={ON_DARK} size={20} />
-          <a 
-            href="https://x.com/stableperp" 
-            target="_blank" 
-            rel="noreferrer" 
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              color: 'rgba(255,255,255,0.7)',
-              marginLeft: '16px',
-              transition: 'color 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-          </a>
-        </span>
-        <span style={{ fontFamily: MONO, fontSize: 12, letterSpacing: "0.14em" }}>
-          $SPERP · {import.meta.env.VITE_CA ? (
-            <a 
-              href={`https://pump.fun/${import.meta.env.VITE_CA}`} 
-              target="_blank" 
-              rel="noreferrer"
-              style={{ color: MINT, textDecoration: "none" }}
+    return (
+        <div className="lp-demo">
+            <div
+                className="lp-demo-tabs"
+                role="tablist"
+                aria-label="Underlying stock"
             >
-              CA: {import.meta.env.VITE_CA.slice(0, 4)}...{import.meta.env.VITE_CA.slice(-4)}
-            </a>
-          ) : "CA SOON"}
-        </span>
-        <span style={{ fontFamily: SANS, fontSize: 12, maxWidth: 360, textAlign: "right", lineHeight: 1.5 }}>
-          Derivatives involve risk. Access is restricted by jurisdiction. Nothing here is financial advice.
-        </span>
-      </footer>
-    </div>
-  );
+                {MARKETS.map((m, i) => (
+                    <button
+                        key={m.symbol}
+                        type="button"
+                        role="tab"
+                        aria-selected={i === assetIdx}
+                        className="lp-demo-tab"
+                        onClick={() => setAssetIdx(i)}
+                    >
+                        <span className="lp-demo-tab-symbol">{m.symbol}</span>
+                        <span className="lp-demo-tab-price">
+                            ${fmt(m.spot)}
+                        </span>
+                    </button>
+                ))}
+            </div>
+
+            <div className="lp-demo-body">
+                <div className="lp-chain">
+                    <div className="lp-chain-head">
+                        <span>Calls</span>
+                        <span>Strike</span>
+                        <span>Puts</span>
+                    </div>
+                    {market.chain.map(([c, k, p], i) => (
+                        <div key={k}>
+                            {i === spotRow && (
+                                <div className="lp-chain-spot">
+                                    <span>
+                                        {market.symbol} ${fmt(market.spot)}
+                                    </span>
+                                </div>
+                            )}
+                            <div className="lp-chain-row">
+                                <button
+                                    type="button"
+                                    className={`lp-chain-cell${k < market.spot ? ' is-itm' : ''}`}
+                                    aria-pressed={side === 'call' && row === i}
+                                    aria-label={`Call, strike ${k}, premium $${fmt(c)}`}
+                                    onClick={() => pick('call', i)}
+                                >
+                                    ${fmt(c)}
+                                </button>
+                                <span className="lp-chain-strike">{k}</span>
+                                <button
+                                    type="button"
+                                    className={`lp-chain-cell lp-chain-cell--put${k > market.spot ? ' is-itm' : ''}`}
+                                    aria-pressed={side === 'put' && row === i}
+                                    aria-label={`Put, strike ${k}, premium $${fmt(p)}`}
+                                    onClick={() => pick('put', i)}
+                                >
+                                    ${fmt(p)}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {spotRow === -1 && (
+                        <div className="lp-chain-spot">
+                            <span>
+                                {market.symbol} ${fmt(market.spot)}
+                            </span>
+                        </div>
+                    )}
+                    <p className="lp-chain-hint">
+                        Pick a premium to build the trade. Shaded prices are in
+                        the money.
+                    </p>
+                </div>
+
+                <div className="lp-ticket" aria-live="polite">
+                    <div className="lp-ticket-title">
+                        <span>
+                            Buy {market.symbol} ${strike} {sideLabel}
+                        </span>
+                        <div className="lp-stepper" aria-label="Contracts">
+                            <button
+                                type="button"
+                                aria-label="Fewer contracts"
+                                onClick={() =>
+                                    setQty((q) => Math.max(1, q - 1))
+                                }
+                                disabled={qty === 1}
+                            >
+                                −
+                            </button>
+                            <output>{qty}</output>
+                            <button
+                                type="button"
+                                aria-label="More contracts"
+                                onClick={() =>
+                                    setQty((q) => Math.min(10, q + 1))
+                                }
+                                disabled={qty === 10}
+                            >
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <dl className="lp-ticket-figures">
+                        <div>
+                            <dt>Total cost</dt>
+                            <dd className="is-primary">
+                                ${fmt(premium * qty)}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Breakeven</dt>
+                            <dd>${fmt(breakeven)}</dd>
+                        </div>
+                        <div>
+                            <dt>Max loss</dt>
+                            <dd>${fmt(premium * qty)}</dd>
+                        </div>
+                        <div>
+                            <dt>Max profit</dt>
+                            <dd>{maxProfit}</dd>
+                        </div>
+                    </dl>
+
+                    <PayoffChart
+                        side={side}
+                        strike={strike}
+                        premium={premium}
+                        qty={qty}
+                        spot={market.spot}
+                    />
+
+                    <Link
+                        className="lp-btn lp-btn--block"
+                        to={`/terminal?action=buy_${side}`}
+                    >
+                        Open in terminal
+                    </Link>
+                    <p className="lp-ticket-note">
+                        Sample prices for illustration. Live quotes are in the
+                        terminal.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ============================== STACK ============================== */
+type Module = { id: string; name: string; desc: string };
+type Layer = {
+    id: string;
+    name: string;
+    modules: Module[];
+    runsOn: string[];
+    flagship?: boolean;
+};
+
+const LAYERS: Layer[] = [
+    {
+        id: 'ecosystem',
+        name: 'Ecosystem',
+        runsOn: ['core', 'solana'],
+        modules: [
+            {
+                id: 'vaults',
+                name: 'Vaults',
+                desc: 'Hold option writers’ USDC in escrow until the option expires or is exercised.',
+            },
+            {
+                id: 'collateral',
+                name: 'Collateral',
+                desc: 'Every option on AlphaPerp is fully collateralized in USDC.',
+            },
+            {
+                id: 'positions',
+                name: 'Positions',
+                desc: 'Track the calls and puts each wallet holds or has written.',
+            },
+            {
+                id: 'corp',
+                name: 'Corporate actions',
+                desc: 'Keep stock options accurate when the underlying company splits or changes its shares.',
+            },
+            {
+                id: 'copilot',
+                name: 'Copilot / MCP',
+                desc: 'Give AI agents a way to read markets and act on them.',
+            },
+            {
+                id: 'more',
+                name: 'And more',
+                desc: 'Any app that needs performance, liquidity and programmability can build on the same core.',
+            },
+        ],
+    },
+    {
+        id: 'apps',
+        name: 'Flagship apps',
+        flagship: true,
+        runsOn: ['core', 'solana'],
+        modules: [
+            {
+                id: 'options',
+                name: 'Options',
+                desc: 'Buy or write calls and puts on US stocks and crypto, settled in USDC.',
+            },
+            {
+                id: 'perps',
+                name: 'Perps',
+                desc: 'Perpetual markets built natively on AlphaPerp Core, next to options.',
+            },
+        ],
+    },
+    {
+        id: 'core',
+        name: 'AlphaPerp Core',
+        runsOn: ['solana'],
+        modules: [
+            {
+                id: 'oracles',
+                name: 'Oracles',
+                desc: 'Pyth supplies the mark price used to price and settle every market.',
+            },
+            {
+                id: 'settlement',
+                name: 'Settlement',
+                desc: 'Payoffs are calculated onchain and paid out in USDC.',
+            },
+            {
+                id: 'factory',
+                name: 'Factory',
+                desc: 'Creates a market for each asset, strike and expiry.',
+            },
+        ],
+    },
+    {
+        id: 'solana',
+        name: 'Solana',
+        runsOn: [],
+        modules: [
+            {
+                id: 'state',
+                name: 'One unified state',
+                desc: 'The core runs as one unified state on Solana, so every app built on it shares the same prices, collateral and settlement.',
+            },
+        ],
+    },
+];
+
+// LAYERS is already ordered top-down the way the stack is actually built:
+// Ecosystem sits on Flagship apps, which sit on Core, which sits on Solana.
+const FLOW_PULSES = 3;
+
+function StackFlow() {
+    const [selected, setSelected] = useState('options');
+    const layer = LAYERS.find((l) => l.modules.some((m) => m.id === selected))!;
+    const module = layer.modules.find((m) => m.id === selected)!;
+    const path = [
+        layer,
+        ...layer.runsOn.map((id) => LAYERS.find((l) => l.id === id)!),
+    ];
+    const litIds = new Set(path.map((l) => l.id));
+
+    // The spine's lit segment reaches from Solana up to whichever layer in
+    // the current path sits highest in the stack — everything below that is
+    // part of the route this module depends on.
+    const topLitIndex = Math.min(
+        ...LAYERS.map((l, i) => (litIds.has(l.id) ? i : Infinity)),
+    );
+    const litHeightPct =
+        ((LAYERS.length - 1 - topLitIndex) / (LAYERS.length - 1)) * 100;
+
+    const flowRef = useRef<HTMLDivElement>(null);
+    const [entered, setEntered] = useState(false);
+
+    useEffect(() => {
+        const el = flowRef.current;
+        if (!el) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            setEntered(true);
+            return;
+        }
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setEntered(true);
+                    obs.disconnect();
+                }
+            },
+            { threshold: 0.35 },
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
+
+    return (
+        <div className="lp-stack">
+            <div
+                ref={flowRef}
+                className={`lp-flow${entered ? ' is-entered' : ''}`}
+                aria-hidden="false"
+            >
+                <div className="lp-flow-trunk" aria-hidden="true">
+                    <div
+                        className="lp-flow-trunk-lit"
+                        style={{ height: `${litHeightPct}%` }}
+                    />
+                    {Array.from({ length: FLOW_PULSES }, (_, i) => (
+                        <span
+                            key={i}
+                            className="lp-flow-pulse"
+                            style={{
+                                animationDelay: `${(-i * 5.5) / FLOW_PULSES}s`,
+                            }}
+                        />
+                    ))}
+                </div>
+
+                {LAYERS.map((l) => {
+                    const lit = litIds.has(l.id);
+                    return (
+                        <div
+                            key={l.id}
+                            className={`lp-flow-layer${lit ? ' is-lit' : ''}`}
+                        >
+                            <div
+                                className={`lp-flow-plate${l.flagship ? ' lp-flow-plate--flagship' : ''}`}
+                            >
+                                <span className="lp-flow-plate-label">
+                                    {l.name}
+                                </span>
+                                <div className="lp-plate-modules">
+                                    {l.modules.map((m) => (
+                                        <button
+                                            key={m.id}
+                                            type="button"
+                                            className={`lp-node${l.flagship ? ' lp-node--flagship' : ''}`}
+                                            aria-pressed={m.id === selected}
+                                            onClick={() => setSelected(m.id)}
+                                        >
+                                            {m.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <div className="lp-stack-detail" aria-live="polite">
+                <div className="lp-stack-detail-layer">{layer.name}</div>
+                <h3 key={module.id} className="lp-stack-detail-name">
+                    {module.name}
+                </h3>
+                <p className="lp-stack-detail-desc">{module.desc}</p>
+                <div className="lp-stack-path" aria-label="Runs on">
+                    {path.map((l) => (
+                        <span key={l.id}>{l.name}</span>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ============================ OWNERSHIP ============================ */
+function Ownership() {
+    const ca = import.meta.env.VITE_CA as string | undefined;
+    const [copied, setCopied] = useState(false);
+
+    const copy = async () => {
+        if (!ca) return;
+        try {
+            await navigator.clipboard.writeText(ca);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1800);
+        } catch {
+            setCopied(false);
+        }
+    };
+
+    return (
+        <section id="ownership" className="lp-section lp-own">
+            <div className="lp-own-inner">
+                <div>
+                    <h2 className="lp-h2">Own a piece of AlphaPerp.</h2>
+                    <p className="lp-lede">
+                        $APERP is the protocol’s native token. Anyone who holds
+                        it can own and govern AlphaPerp.
+                    </p>
+                </div>
+                <div className="lp-own-actions">
+                    <div className="lp-own-buttons">
+                        <Link className="lp-btn" to="/terminal">
+                            Start trading
+                        </Link>
+                        <Link className="lp-btn lp-btn--ghost" to="/docs">
+                            Read the docs
+                        </Link>
+                    </div>
+                    <div className="lp-ca">
+                        <span className="lp-ca-label">$APERP contract</span>
+                        {ca ? (
+                            <button
+                                type="button"
+                                className="lp-ca-value"
+                                onClick={copy}
+                            >
+                                <span className="lp-ca-address">{ca}</span>
+                                <span className="lp-ca-action">
+                                    {copied ? 'Copied' : 'Copy'}
+                                </span>
+                            </button>
+                        ) : (
+                            <span className="lp-ca-soon">
+                                Address coming soon
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+/* ============================== FOOTER ============================== */
+function Footer() {
+    const ca = import.meta.env.VITE_CA as string | undefined;
+    return (
+        <footer className="lp-footer">
+            <div className="lp-footer-top">
+                <div className="lp-footer-brand">
+                    <img src={alphaPerpLogo} alt="" aria-hidden="true" />
+                    <span>
+                        <b>Alpha</b>Perp
+                    </span>
+                </div>
+                <nav className="lp-footer-links" aria-label="Footer">
+                    <div>
+                        <h4>Product</h4>
+                        <Link to="/terminal">Trade</Link>
+                        <Link to="/docs">Docs</Link>
+                    </div>
+                    <div>
+                        <h4>Legal</h4>
+                        <Link to="/terms">Terms</Link>
+                        <Link to="/privacy">Privacy</Link>
+                    </div>
+                    <div>
+                        <h4>Community</h4>
+                        <a
+                            href="https://x.com/stableperp"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            X
+                        </a>
+                        {ca && (
+                            <a
+                                href={`https://pump.fun/${ca}`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                $APERP on pump.fun
+                            </a>
+                        )}
+                    </div>
+                </nav>
+            </div>
+            <p className="lp-footer-legal">
+                Derivatives involve risk. Access is restricted by jurisdiction.
+                Nothing here is financial advice.
+            </p>
+        </footer>
+    );
+}
+
+export default function AlphaPerpLanding() {
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.hash) {
+            setTimeout(() => {
+                const id = location.hash.replace('#', '');
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+    }, [location]);
+
+    return (
+        <div
+            style={{
+                color: 'var(--color-text)',
+                fontFamily: 'var(--font-display)',
+            }}
+        >
+            {/* SilkBackground renders to a WebGL canvas and parses these as
+                raw hex for its shader uniforms, so it can't consume a CSS
+                custom property here — kept in sync with index.css by hand. */}
+            <SilkBackground
+                color="#20D9C5"
+                bgColor="#0B0B0B"
+                speed={0.8}
+                intensity={0.35}
+                scale={2.4}
+            />
+            <link rel="preconnect" href="https://api.fontshare.com" />
+            <link
+                href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap"
+                rel="stylesheet"
+            />
+
+            {/* HERO — the one choreographed motion moment on this page: the
+                logo, tag, headline and subtitle rise in sequence on load. */}
+            <section
+                style={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    background: 'transparent',
+                    minHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    padding: '120px 20px',
+                }}
+            >
+                <div
+                    className="hero-sequence"
+                    style={{
+                        position: 'relative',
+                        maxWidth: 900,
+                        margin: '0 auto',
+                        textAlign: 'center',
+                    }}
+                >
+                    <div
+                        style={{
+                            marginBottom: 40,
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <LiquidLogo />
+                    </div>
+                    <p
+                        style={{
+                            fontWeight: 700,
+                            letterSpacing: '-0.01em',
+                            fontSize: 20,
+                            color: 'var(--color-primary)',
+                            margin: '0 0 18px',
+                        }}
+                    >
+                        Two flows. One edge.
+                    </p>
+                    <h1
+                        style={{
+                            fontWeight: 600,
+                            fontSize: 'clamp(46px, 9vw, 104px)',
+                            letterSpacing: '-0.02em',
+                            margin: '10px 0 0',
+                            lineHeight: 1.05,
+                        }}
+                    >
+                        The edge flows
+                        <br />
+                        onchain.
+                    </h1>
+                    <p
+                        style={{
+                            fontWeight: 400,
+                            fontSize: 18,
+                            color: 'var(--color-text-muted)',
+                            maxWidth: 540,
+                            margin: '26px auto 0',
+                            lineHeight: 1.6,
+                        }}
+                    >
+                        Options on real US stocks, priced by Pyth and settled in
+                        USDC. Built on Solana.
+                    </p>
+                    {import.meta.env.VITE_CA && (
+                        <div style={{ marginTop: 20 }}>
+                            <a
+                                href={`https://pump.fun/${import.meta.env.VITE_CA}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="lp-ca-badge mono-num"
+                            >
+                                CA: {import.meta.env.VITE_CA}
+                            </a>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <StatsBand />
+
+            {/* FLAGSHIP */}
+            <section id="flagship" className="lp-section">
+                <div className="lp-container">
+                    <div className="lp-section-head">
+                        <h2 className="lp-h2">
+                            The premier onchain options venue
+                        </h2>
+                        <p className="lp-lede">
+                            Build a trade below. Choose a stock, pick a strike,
+                            and see exactly what you pay and what you can make.
+                        </p>
+                    </div>
+
+                    <TradeBuilder />
+
+                    <ul className="lp-points">
+                        <li>
+                            <h3>Low fees</h3>
+                            <p>
+                                Zero gas and cheap fills on every trade, priced
+                                onchain.
+                            </p>
+                        </li>
+                        <li>
+                            <h3>Transparent</h3>
+                            <p>
+                                Pricing, collateral and settlement are all
+                                verifiable on Solana.
+                            </p>
+                        </li>
+                        <li>
+                            <h3>Real US equities</h3>
+                            <p>
+                                Calls and puts on NVDA, TSLA, AAPL and more,
+                                priced live by Pyth.
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            {/* STACK */}
+            <section id="stack" className="lp-section lp-section--surface">
+                <div className="lp-container">
+                    <div className="lp-section-head">
+                        <h2 className="lp-h2">The AlphaPerp stack</h2>
+                        <p className="lp-lede">
+                            Options and perps are the flagship markets, but they
+                            are just the tip of the iceberg. Select any part of
+                            the stack to see what it does and what it runs on.
+                        </p>
+                    </div>
+                    <StackFlow />
+                </div>
+            </section>
+
+            <Ownership />
+            <Footer />
+        </div>
+    );
 }

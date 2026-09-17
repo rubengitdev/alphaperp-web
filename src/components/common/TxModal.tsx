@@ -71,9 +71,9 @@ export const TxModal: FC<TxModalProps> = ({ isOpen, type, title, message, txSign
             wordBreak: 'break-all',
             color: '#A3A3A3',
             fontSize: '0.875rem',
-            fontFamily: "'Space Mono', monospace",
+            fontFamily: "'Satoshi', sans-serif",
           }}>
-            <div style={{ marginBottom: '0.5rem', fontWeight: 'bold', color: '#FFF' }}>Transaction Signature:</div>
+            <div style={{ marginBottom: '0.5rem', fontWeight: 'bold', color: '#F7F4ED' }}>Transaction Signature:</div>
             {txSignature}
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
@@ -82,7 +82,7 @@ export const TxModal: FC<TxModalProps> = ({ isOpen, type, title, message, txSign
                 style={{
                   background: '#2A2A2A',
                   border: '1px solid #404040',
-                  color: '#FFF',
+                  color: '#F7F4ED',
                   padding: '0.5rem 1rem',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -102,7 +102,7 @@ export const TxModal: FC<TxModalProps> = ({ isOpen, type, title, message, txSign
                 style={{
                   background: activeColor,
                   border: 'none',
-                  color: '#FFF',
+                  color: '#F7F4ED',
                   padding: '0.5rem 1rem',
                   borderRadius: '6px',
                   cursor: 'pointer',

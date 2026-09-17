@@ -11,7 +11,7 @@ export function LightweightChart() {
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
         textColor: '#A3A3A3',
-        fontFamily: "'Space Mono', monospace",
+        fontFamily: "'Satoshi', sans-serif",
       },
       grid: {
         vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
@@ -28,10 +28,10 @@ export function LightweightChart() {
     });
 
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#5EEAD4',
+      upColor: '#20D9C5',
       downColor: '#EF4444',
       borderVisible: false,
-      wickUpColor: '#5EEAD4',
+      wickUpColor: '#20D9C5',
       wickDownColor: '#EF4444',
     });
 
