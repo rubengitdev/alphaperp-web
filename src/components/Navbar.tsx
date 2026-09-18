@@ -103,15 +103,15 @@ export const Navbar: FC<NavbarProps> = ({ variant = 'landing' }) => {
                         </button>
                         <button
                             type="button"
-                            onClick={() => setNetwork('devnet')}
-                            aria-pressed={network === 'devnet'}
+                            onClick={() => setNetwork('testnet')}
+                            aria-pressed={network === 'testnet'}
                             className={`network-toggle-btn${
-                                network === 'devnet'
+                                network === 'testnet'
                                     ? ' network-toggle-btn--active'
                                     : ''
                             }`}
                         >
-                            Devnet
+                            Testnet
                         </button>
                     </div>
                 )}

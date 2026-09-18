@@ -11,7 +11,7 @@ export const WalletContextProvider: FC<{ children: ReactNode }> = ({ children })
     const { rpcUrl } = useNetwork();
     
     // Fallback to clusterApiUrl if rpcUrl is empty (though it shouldn't be)
-    const endpoint = useMemo(() => rpcUrl || clusterApiUrl('devnet'), [rpcUrl]);
+    const endpoint = useMemo(() => rpcUrl || clusterApiUrl('testnet'), [rpcUrl]);
 
     const wallets = useMemo(
         () => [

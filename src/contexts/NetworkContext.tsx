@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
-export type NetworkType = 'devnet' | 'mainnet-beta';
+export type NetworkType = 'testnet' | 'mainnet-beta';
 
 interface NetworkContextState {
   network: NetworkType;
@@ -15,7 +15,7 @@ const NetworkContext = createContext<NetworkContextState | undefined>(undefined)
 export const NetworkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [network, setNetworkState] = useState<NetworkType>(() => {
     const saved = localStorage.getItem('alphaperp-network');
-    return (saved as NetworkType) || 'devnet';
+    return (saved as NetworkType) || 'testnet';
   });
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export const NetworkProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const rpcUrl = network === 'mainnet-beta'
     ? import.meta.env.VITE_MAINNET_RPC_URL || 'https://api.mainnet-beta.solana.com'
-    : import.meta.env.VITE_RPC_URL || 'https://api.devnet.solana.com';
+    : import.meta.env.VITE_RPC_URL || 'https://api.testnet.solana.com';
 
   const baseApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
