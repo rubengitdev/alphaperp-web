@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { FC } from 'react';
 import { HermesClient } from '@pythnetwork/hermes-client';
 
-import { useStableperpProgram } from '../../hooks/useStableperpProgram';
+import { useAlphaperpProgram } from '../../hooks/useAlphaperpProgram';
 import { isUSMarketOpen } from '../../utils/marketHours';
 import { useNetwork } from '../../contexts/NetworkContext';
 
@@ -33,9 +33,11 @@ export const MarketList: FC<MarketListProps> = ({ onSelectMarket, selectedMarket
   const [markets, setMarkets] = useState<Market[]>([]);
   const [loading, setLoading] = useState(true);
   const [pythPrices, setPythPrices] = useState<Record<string, number>>({});
-  const program = useStableperpProgram();
+  const program = useAlphaperpProgram();
   const { network, apiUrl } = useNetwork();
-  const hermesRef = useRef(new HermesClient("https://hermes.pyth.network"));
+  const hermesRef = useRef(new HermesClient("https://hermes.pyth.network", {
+    headers: { Authorization: `Bearer ${import.meta.env.VITE_PYTH_API_KEY}` },
+  }));
 
   useEffect(() => {
     async function fetchMarkets() {

@@ -14,12 +14,12 @@ const NetworkContext = createContext<NetworkContextState | undefined>(undefined)
 
 export const NetworkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [network, setNetworkState] = useState<NetworkType>(() => {
-    const saved = localStorage.getItem('stableperp-network');
+    const saved = localStorage.getItem('alphaperp-network');
     return (saved as NetworkType) || 'devnet';
   });
 
   useEffect(() => {
-    localStorage.setItem('stableperp-network', network);
+    localStorage.setItem('alphaperp-network', network);
   }, [network]);
 
   const setNetwork = (newNetwork: NetworkType) => {

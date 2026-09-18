@@ -805,10 +805,11 @@
 .lp-own-inner {
     max-width: 1180px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    display: flex;
+    /* grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); */
     gap: 48px;
     align-items: center;
+    justify-content: space-evenly;
 }
 
 .lp-own .lp-lede {

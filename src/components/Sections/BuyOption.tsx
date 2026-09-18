@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FC } from 'react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { useStableperpProgram } from '../../hooks/useStableperpProgram';
+import { useAlphaperpProgram } from '../../hooks/useAlphaperpProgram';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import * as anchor from '@coral-xyz/anchor';
 
@@ -24,7 +24,7 @@ export const BuyOption: FC<BuyOptionProps> = ({ market, optionType = 'call' }) =
   });
   const { publicKey } = useWallet();
   const { connection } = useConnection();
-  const program = useStableperpProgram();
+  const program = useAlphaperpProgram();
 
   const premiumPerOption = market && market.premiumAsk ? market.premiumAsk : 0;
   const quantity = (parseFloat(qty) * 10 ** 6) || 0;

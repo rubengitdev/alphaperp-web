@@ -120,7 +120,9 @@ export const AssetList: FC<AssetListProps> = ({
     const { apiUrl } = useNetwork();
     const hasAutoSelected = useRef(false);
     const wsRef = useRef<WebSocket | null>(null);
-    const hermesRef = useRef(new HermesClient('https://hermes.pyth.network'));
+    const hermesRef = useRef(new HermesClient('https://hermes.pyth.network', {
+        headers: { Authorization: `Bearer ${import.meta.env.VITE_PYTH_API_KEY}` },
+    }));
 
     useEffect(() => {
         // Subscribe to Binance individual symbol miniTicker streams

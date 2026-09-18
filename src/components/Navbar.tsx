@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FC } from 'react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Link } from 'react-router-dom';
@@ -35,21 +35,34 @@ export const LogoText: FC = () => (
 );
 
 export const Navbar: FC<NavbarProps> = ({ variant = 'landing' }) => {
+    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const isTerminal = variant === 'terminal';
-    const { network, setNetwork } = isTerminal
-        ? useNetwork()
-        : { network: 'devnet', setNetwork: () => {} };
+    const { network, setNetwork } = useNetwork();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     return (
         <>
             <nav
-                className={`navbar-container ${isTerminal ? 'navbar-terminal' : 'navbar-landing'}`}
+                className={`navbar-container ${isTerminal ? 'navbar-terminal' : 'navbar-landing'} ${isScrolled ? 'navbar-container--scrolled' : ''} `}
             >
                 <Link
                     to="/"
                     className="navbar-logo-link"
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    onClick={() =>
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }
                 >
                     <div className="navbar-logo">
                         <img src={alphaPerpLogo} alt="AlphaPerp" />
@@ -104,7 +117,7 @@ export const Navbar: FC<NavbarProps> = ({ variant = 'landing' }) => {
                 )}
                 <div className="navbar-actions">
                     <a
-                        href="https://x.com/stableperp"
+                        href="https://x.com/alphaperp"
                         target="_blank"
                         rel="noreferrer"
                         className="navbar-x-link"

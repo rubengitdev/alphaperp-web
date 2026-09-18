@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type { FC } from 'react';
 import { HermesClient } from '@pythnetwork/hermes-client';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { useStableperpProgram } from '../../hooks/useStableperpProgram';
+import { useAlphaperpProgram } from '../../hooks/useAlphaperpProgram';
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress } from '@solana/spl-token';
 import { PublicKey, SystemProgram } from '@solana/web3.js';
 import { useNetwork } from '../../contexts/NetworkContext';
@@ -40,7 +40,7 @@ interface Position {
 export const UserPositions: FC = () => {
   const { publicKey } = useWallet();
   const { connection } = useConnection();
-  const program = useStableperpProgram();
+  const program = useAlphaperpProgram();
 
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,9 @@ export const UserPositions: FC = () => {
   }>({ isOpen: false, type: 'success', title: '', message: '' });
   const { network, apiUrl } = useNetwork();
   const wsRef = useRef<WebSocket | null>(null);
-  const hermesRef = useRef(new HermesClient("https://hermes.pyth.network"));
+  const hermesRef = useRef(new HermesClient("https://hermes.pyth.network", {
+    headers: { Authorization: `Bearer ${import.meta.env.VITE_PYTH_API_KEY}` },
+  }));
 
   // Subscribe to live prices for position symbols
   useEffect(() => {

@@ -791,7 +791,7 @@ function Footer() {
                     <div>
                         <h4>Community</h4>
                         <a
-                            href="https://x.com/stableperp"
+                            href="https://x.com/alphaperp"
                             target="_blank"
                             rel="noreferrer"
                         >

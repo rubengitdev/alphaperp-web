@@ -2,7 +2,7 @@ import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider } from '@coral-xyz/anchor';
 import type { Idl } from '@coral-xyz/anchor';
 import { useMemo } from 'react';
-import stableperpIdl from '../idl/stableperp.json';
+import alphaperpIdl from '../idl/alphaperp.json';
 import { PublicKey } from '@solana/web3.js';
 import { useNetwork } from '../contexts/NetworkContext';
 
@@ -13,7 +13,7 @@ const dummyWallet = {
   signAllTransactions: () => Promise.reject(),
 };
 
-export function useStableperpProgram() {
+export function useAlphaperpProgram() {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
   const { network } = useNetwork();
@@ -27,7 +27,7 @@ export function useStableperpProgram() {
     });
     
     // Deep clone the IDL to safely modify it
-    const idl = JSON.parse(JSON.stringify(stableperpIdl));
+    const idl = JSON.parse(JSON.stringify(alphaperpIdl));
     if (network === 'mainnet-beta') {
       idl.address = import.meta.env.VITE_MAINNET_PROGRAM_ID;
     }
