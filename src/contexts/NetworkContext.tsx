@@ -15,6 +15,7 @@ const NetworkContext = createContext<NetworkContextState | undefined>(undefined)
 export const NetworkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [network, setNetworkState] = useState<NetworkType>(() => {
     const saved = localStorage.getItem('alphaperp-network');
+    if (saved === 'devnet') return 'testnet'; // legacy value, cluster migrated to testnet
     return (saved as NetworkType) || 'testnet';
   });
 
